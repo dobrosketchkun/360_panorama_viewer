@@ -10,6 +10,7 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 
 - Equirectangular input (2:1). Any size — large images may strain the browser.
 - Load by drag-and-drop, clipboard paste, file picker, or URL. Drop and paste work anywhere on the page, anytime, even mid-fullscreen.
+- Direct-link parameter: `…/?<image-url>` (or `…/?url=<encoded>`) auto-loads that image on page open. Subject to the host serving CORS headers.
 - Mouse / arrow / wheel controls. Touch supported (one-finger drag, two-finger pinch). No gyro.
 - Fullscreen with auto-hiding chrome (compass + help badge + exit button).
 - Compass: shows heading, click to reset to north.

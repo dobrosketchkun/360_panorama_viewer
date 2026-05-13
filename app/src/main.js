@@ -122,3 +122,17 @@ hotkeys.bind('ctrl+shift+z', () => {
   if (pipeline.redo() && cropPad.isOpen()) cropPad.refresh();
 });
 hotkeys.bind('shift+/', () => helpDlg.toggle());
+
+function parseInitialURL() {
+  const search = window.location.search;
+  if (!search || search.length < 2) return null;
+  const rest = search.slice(1);
+  if (/^https?(:|%3a)/i.test(rest)) {
+    try { return decodeURIComponent(rest); } catch { return rest; }
+  }
+  return new URLSearchParams(search).get('url');
+}
+
+const initialURL = parseInitialURL();
+if (initialURL) input.loadURL(initialURL);
+
