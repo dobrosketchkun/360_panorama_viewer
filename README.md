@@ -4,6 +4,8 @@ A single-page equirectangular 360 panorama viewer built for cleanup work. The no
 
 Vite + Three.js + vanilla JS. Builds to a static site for GitHub Pages.
 
+Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
+
 ## Features
 
 - Equirectangular input (2:1). Any size — large images may strain the browser.
