@@ -5,6 +5,7 @@ import { InputHandler } from './input.js';
 import { Compass } from './compass.js';
 import { FullscreenManager } from './fullscreen.js';
 import { Hotkeys } from './hotkeys.js';
+import { AutoRotate } from './autorotate.js';
 import { CropPadDialog } from './dialogs/cropPad.js';
 import { OpenDialog } from './dialogs/open.js';
 import { HelpDialog } from './dialogs/help.js';
@@ -39,15 +40,21 @@ const toast = document.createElement('div');
 toast.className = 'toast fade';
 root.appendChild(toast);
 let toastTimer = null;
-function showToast(msg, ms = 4000) {
+function showToast(msg, ms = 4000, kind = 'warning') {
   toast.textContent = msg;
+  toast.classList.toggle('info', kind === 'info');
   toast.classList.remove('fade');
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.add('fade'), ms);
 }
 
+function showAutoRotateToast() {
+  showToast(autoRotate.statusLabel(), 900, 'info');
+}
+
 const viewer = new Viewer(root);
 const canvas = viewer.renderer.domElement;
+const autoRotate = new AutoRotate(viewer);
 
 let cropPad = null;
 const pipeline = new Pipeline(canvasEl => {
@@ -109,6 +116,35 @@ hotkeys.bind('s', async () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 hotkeys.bind('f', () => fs.toggle());
+hotkeys.bind('r', () => {
+  autoRotate.toggle();
+  showAutoRotateToast();
+});
+hotkeys.bind('+', () => {
+  if (!autoRotate.enabled) { showToast('Auto-rotate is off. Press R to start.', 900, 'info'); return; }
+  autoRotate.increaseSpeed();
+  showAutoRotateToast();
+});
+hotkeys.bind('-', () => {
+  if (!autoRotate.enabled) { showToast('Auto-rotate is off. Press R to start.', 900, 'info'); return; }
+  autoRotate.decreaseSpeed();
+  showAutoRotateToast();
+});
+hotkeys.bind('alt++', () => {
+  if (!autoRotate.enabled) { showToast('Auto-rotate is off. Press R to start.', 900, 'info'); return; }
+  autoRotate.increaseSpeed(autoRotate.fineStep());
+  showAutoRotateToast();
+});
+hotkeys.bind('alt+-', () => {
+  if (!autoRotate.enabled) { showToast('Auto-rotate is off. Press R to start.', 900, 'info'); return; }
+  autoRotate.decreaseSpeed(autoRotate.fineStep());
+  showAutoRotateToast();
+});
+hotkeys.bind('*', () => {
+  if (!autoRotate.enabled) { showToast('Auto-rotate is off. Press R to start.', 900, 'info'); return; }
+  autoRotate.flipDirection();
+  showAutoRotateToast();
+});
 hotkeys.bind('escape', () => {
   if (helpDlg.isOpen()) { helpDlg.close(); return; }
   if (cropPad.isOpen()) { cropPad.close(); return; }

@@ -12,6 +12,7 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 - Load by drag-and-drop, clipboard paste, file picker, or URL. Drop and paste work anywhere on the page, anytime, even mid-fullscreen.
 - Direct-link parameter: `…/?<image-url>` (or `…/?url=<encoded>`) auto-loads that image on page open. Subject to the host serving CORS headers.
 - Mouse / arrow / wheel controls. Touch supported (one-finger drag, two-finger pinch). No gyro.
+- Auto-rotate mode with keyboard speed and direction controls.
 - Fullscreen with auto-hiding chrome (compass + help badge + exit button).
 - Compass: shows heading, click to reset to north.
 - Crop and pad each edge of the image. Negative slider value = pad with black, positive = crop pixels. Each completed drag is one undo step.
@@ -29,6 +30,10 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 | `C` | Crop / Pad dialog |
 | `S` | Save current image as PNG |
 | `F` | Toggle fullscreen |
+| `R` | Toggle auto-rotate |
+| `+` / `-` | Increase / decrease auto-rotate speed by 1 deg/s |
+| `Alt++` / `Alt+-` | Fine-adjust auto-rotate speed by 0.1 deg/s |
+| `*` | Flip auto-rotate direction |
 | `Ctrl+Z` / `Ctrl+Shift+Z` | Undo / redo crop+pad |
 | `Esc` | Close top dialog, then exit fullscreen |
 | `?` | Show hotkey help |

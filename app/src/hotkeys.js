@@ -10,6 +10,9 @@ const CODE_MAP = {
   Period: '.',
   Minus: '-',
   Equal: '=',
+  NumpadAdd: '+',
+  NumpadSubtract: '-',
+  NumpadMultiply: '*',
   Space: 'space',
   Enter: 'enter',
   Backspace: 'backspace',
@@ -19,12 +22,14 @@ const CODE_MAP = {
 
 function comboFromEvent(e) {
   let key;
-  if (e.code && e.code.startsWith('Key')) key = e.code.slice(3).toLowerCase();
+  const shiftedSymbol = e.key === '+' || e.key === '*';
+  if (shiftedSymbol) key = e.key;
+  else if (e.code && e.code.startsWith('Key')) key = e.code.slice(3).toLowerCase();
   else if (e.code && e.code.startsWith('Digit')) key = e.code.slice(5);
   else key = CODE_MAP[e.code] || (e.key || '').toLowerCase();
   const parts = [];
   if (e.ctrlKey || e.metaKey) parts.push('ctrl');
-  if (e.shiftKey) parts.push('shift');
+  if (e.shiftKey && !shiftedSymbol) parts.push('shift');
   if (e.altKey) parts.push('alt');
   parts.push(key);
   return parts.join('+');

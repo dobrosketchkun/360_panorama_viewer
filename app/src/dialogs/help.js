@@ -18,6 +18,10 @@ export class HelpDialog {
         <tr><td><kbd>C</kbd></td><td>Crop / Pad</td></tr>
         <tr><td><kbd>S</kbd></td><td>Save current view as PNG</td></tr>
         <tr><td><kbd>F</kbd></td><td>Toggle fullscreen</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Toggle auto-rotate</td></tr>
+        <tr><td><kbd>+</kbd> / <kbd>-</kbd></td><td>Change auto-rotate speed by 1 deg/s</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>+</kbd> / <kbd>Alt</kbd>+<kbd>-</kbd></td><td>Fine auto-rotate speed by 0.1 deg/s</td></tr>
+        <tr><td><kbd>*</kbd></td><td>Flip auto-rotate direction</td></tr>
         <tr><td><kbd>Esc</kbd></td><td>Close dialog / exit fullscreen</td></tr>
         <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo crop/pad</td></tr>
         <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>

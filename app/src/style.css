@@ -343,4 +343,8 @@ canvas {
   font-size: 12px;
   transition: opacity 240ms ease;
 }
+.toast.info {
+  background: var(--chrome-bg);
+  border-color: var(--chrome-border);
+}
 .toast.fade { opacity: 0; pointer-events: none; }
