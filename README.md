@@ -33,6 +33,8 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 | `C` | Crop / Pad dialog |
 | `Alt+S` | Save current image as PNG |
 | `WASD` / `QE` | Lean the eye around the centre (depth map only) |
+| Right-drag | Lean sideways + forward/back (depth map only) |
+| `Alt`+right-drag | Lean sideways + down/up (depth map only) |
 | `Shift` | Hold while leaning for fine control |
 | `[` / `]` | Weaker / stronger depth (depth map only) |
 | `F` | Toggle fullscreen |

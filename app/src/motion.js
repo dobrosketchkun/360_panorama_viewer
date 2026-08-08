@@ -16,6 +16,8 @@ const CROSS_TIME = 0.8;   // s to travel the full limit laterally
 const FWD_GAIN = 0.5;     // forward opens disocclusions all around the periphery
 const FINE = 0.3;         // shift means precision here, not speed — the range is tiny
 
+const DRAG_SPAN = 300;    // px of drag to cross the full limit
+
 const CODES = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE'];
 
 export class Motion {
@@ -23,13 +25,14 @@ export class Motion {
     this.viewer = viewer;
     this.keys = new Set();
     this.shift = false;
+    this.dragging = false;
     this.tx = 0; this.ty = 0; this.tz = 0;
     this.px = 0; this.py = 0; this.pz = 0;
     this._last = performance.now();
 
     window.addEventListener('keydown', e => this._onKey(e, true));
     window.addEventListener('keyup', e => this._onKey(e, false));
-    window.addEventListener('blur', () => this.keys.clear());
+    window.addEventListener('blur', () => { this.keys.clear(); this.dragging = false; });
 
     const loop = () => {
       const now = performance.now();
@@ -42,6 +45,42 @@ export class Motion {
   }
 
   isActive() { return this.viewer.hasDepth(); }
+
+  beginDrag() { this.dragging = true; }
+
+  endDrag() { this.dragging = false; }
+
+  // Right-drag, in pointer pixels. Signs follow the existing look-around drag,
+  // which moves the scene with the cursor — so the eye travels the other way.
+  // alt swaps the vertical axis from dolly to rise/fall (the QE pair).
+  drag(dx, dy, alt, fine) {
+    if (!this.isActive()) return;
+    const k = (this.viewer.eyeLimit() / DRAG_SPAN) * (fine ? FINE : 1);
+    const yaw = this.viewer.yaw;
+    const sinY = Math.sin(yaw), cosY = Math.cos(yaw);
+
+    const strafe = -dx * k;
+    this.tx += cosY * strafe;
+    this.tz += -sinY * strafe;
+    if (alt) {
+      this.ty += dy * k;
+    } else {
+      // Push the mouse away from you to move into the scene.
+      const fwd = -dy * k * FWD_GAIN;
+      this.tx += -sinY * fwd;
+      this.tz += -cosY * fwd;
+    }
+    this._clamp();
+  }
+
+  _clamp() {
+    const limit = this.viewer.eyeLimit();
+    const len = Math.hypot(this.tx, this.ty, this.tz);
+    if (len > limit) {
+      const k = limit / len;
+      this.tx *= k; this.ty *= k; this.tz *= k;
+    }
+  }
 
   _onKey(e, down) {
     const el = document.activeElement;
@@ -83,11 +122,9 @@ export class Motion {
       this.tx += (-sinY * f * FWD_GAIN + cosY * s) * speed * dt;
       this.tz += (-cosY * f * FWD_GAIN - sinY * s) * speed * dt;
       this.ty += u * speed * dt;
-      const len = Math.hypot(this.tx, this.ty, this.tz);
-      if (len > limit) {
-        const k = limit / len;
-        this.tx *= k; this.ty *= k; this.tz *= k;
-      }
+      this._clamp();
+    } else if (this.dragging) {
+      // Hold position while the button is down; spring back on release.
     } else {
       const decay = Math.exp(-dt / RETURN_TAU);
       this.tx *= decay; this.ty *= decay; this.tz *= decay;

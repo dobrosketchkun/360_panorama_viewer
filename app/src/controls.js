@@ -3,9 +3,12 @@
 // 2 active pointers = pinch FOV.
 
 export class Controls {
-  constructor(viewer, canvas) {
+  constructor(viewer, canvas, motion = null) {
     this.viewer = viewer;
     this.canvas = canvas;
+    this.motion = motion;
+    this.motionPointer = null;
+    this.motionLast = { x: 0, y: 0 };
     this.pointers = new Map();
     this.lastPinchDist = 0;
     this.keys = new Set();
@@ -20,7 +23,13 @@ export class Controls {
 
     window.addEventListener('keydown', e => this._onKeyDown(e));
     window.addEventListener('keyup', e => this._onKeyUp(e));
-    window.addEventListener('blur', () => this.keys.clear());
+    window.addEventListener('blur', () => {
+      this.keys.clear();
+      if (this.motionPointer !== null) {
+        this.motionPointer = null;
+        this.motion.endDrag();
+      }
+    });
 
     const loop = () => {
       const now = performance.now();
@@ -35,6 +44,16 @@ export class Controls {
   _sensitivity() { return Math.max(0.1, this.viewer.fov / 75); }
 
   _onDown(e) {
+    // Right button leans the eye, but only with a depth map loaded — otherwise
+    // it stays a rotate drag, as it has always been.
+    if (e.button === 2 && this.motion && this.motion.isActive()) {
+      try { this.canvas.setPointerCapture(e.pointerId); } catch {}
+      this.motionPointer = e.pointerId;
+      this.motionLast.x = e.clientX;
+      this.motionLast.y = e.clientY;
+      this.motion.beginDrag();
+      return;
+    }
     try { this.canvas.setPointerCapture(e.pointerId); } catch {}
     this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (this.pointers.size === 2) {
@@ -44,6 +63,15 @@ export class Controls {
   }
 
   _onMove(e) {
+    if (this.motionPointer === e.pointerId) {
+      const dx = e.clientX - this.motionLast.x;
+      const dy = e.clientY - this.motionLast.y;
+      this.motionLast.x = e.clientX;
+      this.motionLast.y = e.clientY;
+      // Read the modifiers live so alt can be tapped mid-drag.
+      this.motion.drag(dx, dy, e.altKey, e.shiftKey);
+      return;
+    }
     const p = this.pointers.get(e.pointerId);
     if (!p) return;
     const dx = e.clientX - p.x;
@@ -63,6 +91,11 @@ export class Controls {
   }
 
   _onUp(e) {
+    if (this.motionPointer === e.pointerId) {
+      this.motionPointer = null;
+      this.motion.endDrag();
+      return;
+    }
     this.pointers.delete(e.pointerId);
     if (this.pointers.size < 2) this.lastPinchDist = 0;
   }

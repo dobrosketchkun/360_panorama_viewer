@@ -82,7 +82,7 @@ const input = new InputHandler(pipeline, {
   dropOverlay,
 });
 
-new Controls(viewer, canvas);
+new Controls(viewer, canvas, motion);
 
 const openDlg = new OpenDialog({ input, container: root });
 cropPad = new CropPadDialog({ pipeline, container: root });

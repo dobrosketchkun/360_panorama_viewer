@@ -29,7 +29,9 @@ export class HelpDialog {
         <tr><td colspan="2" style="padding-top:8px; opacity:0.7;">With a depth map loaded (open two files: panorama, then depth map):</td></tr>
         <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td>Lean around the centre — springs back when released</td></tr>
         <tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td>Lean down / up</td></tr>
-        <tr><td><kbd>Shift</kbd></td><td>Hold while leaning for fine control</td></tr>
+        <tr><td>Right-drag</td><td>Lean — sideways and forward/back</td></tr>
+        <tr><td><kbd>Alt</kbd>+right-drag</td><td>Lean — sideways and down/up</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>Hold while leaning (keys or drag) for fine control</td></tr>
         <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Weaker / stronger depth (default 2.0×, or set <code>&amp;ds=</code> in the link)</td></tr>
         <tr><td colspan="2" style="padding-top:8px; opacity:0.7;">Hold <kbd>Ctrl</kbd> while dragging a crop/pad slider for fine (1px per pointer pixel) control.</td></tr>
         <tr><td colspan="2" style="opacity:0.7;">Drop, paste, or pick to load an image — anywhere, anytime.</td></tr>
