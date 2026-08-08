@@ -4,8 +4,11 @@ import * as THREE from 'three';
 const FAR_R = 500;
 // Nearest surface as a fraction of FAR_R. This is the depth "strength" knob:
 // the map is relative inverse depth with no metric scale, so there is nothing
-// to derive it from — it's tuned by eye per image.
-const DEFAULT_NEAR_RATIO = 0.12;
+// to derive it from — it's tuned by eye per image. Exposed to the user as
+// strength = 1 / ratio (far radius over near radius), so 0.5 reads as "2.0x".
+const DEFAULT_NEAR_RATIO = 0.5;
+const MIN_NEAR_RATIO = 0.03;  // 33x, near plane very close, heavy parallax
+const MAX_NEAR_RATIO = 0.95;  // ~1.05x, near and far nearly converged, almost flat
 // Eye travel budget as a fraction of the nearest surface. Must stay well under
 // 1.0: reach the nearest surface and the camera punches through the mesh and
 // sees the panorama inside-out.
@@ -168,9 +171,17 @@ export class Viewer {
   getNearRatio() { return this.depthUniforms.uNearR.value / FAR_R; }
 
   setNearRatio(ratio) {
-    const r = Math.max(0.03, Math.min(0.6, ratio));
+    const r = Math.max(MIN_NEAR_RATIO, Math.min(MAX_NEAR_RATIO, ratio));
     this.depthUniforms.uNearR.value = FAR_R * r;
     return r;
+  }
+
+  getStrength() { return 1 / this.getNearRatio(); }
+
+  // Strength is the user-facing form: far radius over near radius.
+  setStrength(x) {
+    if (!Number.isFinite(x) || x <= 0) return this.getStrength();
+    return 1 / this.setNearRatio(1 / x);
   }
 
   eyeLimit() { return this.depthUniforms.uNearR.value * EYE_FRACTION; }

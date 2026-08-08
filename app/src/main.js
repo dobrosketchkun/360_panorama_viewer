@@ -78,6 +78,7 @@ const input = new InputHandler(pipeline, {
   },
   onError: msg => showToast(msg),
   onWarn: msg => showToast(msg),
+  onStrength: x => viewer.setStrength(x),
   dropOverlay,
 });
 
@@ -173,10 +174,10 @@ hotkeys.bind(']', () => adjustDepth(0.85));
 // near plane and more parallax. Stepped multiplicatively — it's a reciprocal.
 function adjustDepth(factor) {
   if (!viewer.hasDepth()) { showToast('No depth map loaded.', 900, 'info'); return; }
-  const r = viewer.setNearRatio(viewer.getNearRatio() * factor);
-  showToast(`Depth strength ${(1 / r).toFixed(1)}×`, 900, 'info');
+  const s = viewer.setStrength(viewer.getStrength() / factor);
+  showToast(`Depth strength ${s.toFixed(2)}×`, 900, 'info');
 }
 
 const initial = parseQuery(window.location.search);
-if (initial) input.loadURL(initial.url, initial.depth);
+if (initial) input.loadURL(initial.url, initial.depth, initial.strength);
 

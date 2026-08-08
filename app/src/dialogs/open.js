@@ -16,7 +16,7 @@ export class OpenDialog {
     const body = document.createElement('div');
     body.innerHTML = `
       <div class="row">
-        <input type="text" placeholder="Image URL… (append &d=<depth-url> for depth)" />
+        <input type="text" placeholder="Image URL… (&d=<depth-url>, &ds=<strength>)" />
         <button class="load" type="button">Load</button>
       </div>
       <div class="row">
@@ -80,7 +80,7 @@ export class OpenDialog {
     this.errorEl.textContent = 'Loading…';
     const orig = this.input.onError;
     this.input.onError = msg => { this.errorEl.textContent = msg; };
-    const ok = await this.input.loadURL(spec.url, spec.depth);
+    const ok = await this.input.loadURL(spec.url, spec.depth, spec.strength);
     this.input.onError = orig;
     if (ok) {
       this.errorEl.textContent = '';

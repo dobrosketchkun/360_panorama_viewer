@@ -2,7 +2,7 @@
 // for the open dialog (URL fetch, file picker).
 
 export class InputHandler {
-  constructor(pipeline, { onLoad, onError, onWarn, dropOverlay }) {
+  constructor(pipeline, { onLoad, onError, onWarn, onStrength, dropOverlay }) {
     this.pipeline = pipeline;
     this.onLoad = onLoad || (() => {});
     this.onError = onError || (() => {});
@@ -10,6 +10,7 @@ export class InputHandler {
     // Kept separate from onError because the open dialog swaps onError out and
     // clears its error line on success, which would swallow the warning.
     this.onWarn = onWarn || (() => {});
+    this.onStrength = onStrength || (() => {});
     this.dropOverlay = dropOverlay;
     this._dragCounter = 0;
 
@@ -44,7 +45,7 @@ export class InputHandler {
 
   async loadBlob(blob) { return await this.loadBlobs(blob, null); }
 
-  async loadURL(url, depthURL = null) {
+  async loadURL(url, depthURL = null, strength = null) {
     try {
       const res = await fetch(url, { mode: 'cors' });
       if (!res.ok) { this.onError(`HTTP ${res.status}`); return false; }
@@ -62,6 +63,7 @@ export class InputHandler {
           this.onWarn('Depth map fetch failed (likely CORS). Loaded panorama only.');
         }
       }
+      if (depthBlob && strength != null) this.onStrength(strength);
       return await this.loadBlobs(blob, depthBlob);
     } catch (err) {
       this.onError('Fetch failed (likely CORS): ' + (err.message || err));
