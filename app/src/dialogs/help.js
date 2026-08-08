@@ -16,7 +16,7 @@ export class HelpDialog {
       <table>
         <tr><td><kbd>O</kbd></td><td>Open dialog (URL / file)</td></tr>
         <tr><td><kbd>C</kbd></td><td>Crop / Pad</td></tr>
-        <tr><td><kbd>S</kbd></td><td>Save current view as PNG</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>S</kbd></td><td>Save current view as PNG</td></tr>
         <tr><td><kbd>F</kbd></td><td>Toggle fullscreen</td></tr>
         <tr><td><kbd>R</kbd></td><td>Toggle auto-rotate</td></tr>
         <tr><td><kbd>+</kbd> / <kbd>-</kbd></td><td>Change auto-rotate speed by 1 deg/s</td></tr>
@@ -26,6 +26,11 @@ export class HelpDialog {
         <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo crop/pad</td></tr>
         <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>
         <tr><td><kbd>?</kbd></td><td>Show this help</td></tr>
+        <tr><td colspan="2" style="padding-top:8px; opacity:0.7;">With a depth map loaded (open two files: panorama, then depth map):</td></tr>
+        <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td>Lean around the centre — springs back when released</td></tr>
+        <tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td>Lean down / up</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>Hold while leaning for fine control</td></tr>
+        <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Weaker / stronger depth</td></tr>
         <tr><td colspan="2" style="padding-top:8px; opacity:0.7;">Hold <kbd>Ctrl</kbd> while dragging a crop/pad slider for fine (1px per pointer pixel) control.</td></tr>
         <tr><td colspan="2" style="opacity:0.7;">Drop, paste, or pick to load an image — anywhere, anytime.</td></tr>
         <tr><td colspan="2" style="opacity:0.7;">Drag / arrows / wheel to look around.</td></tr>

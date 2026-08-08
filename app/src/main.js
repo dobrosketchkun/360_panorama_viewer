@@ -6,6 +6,8 @@ import { Compass } from './compass.js';
 import { FullscreenManager } from './fullscreen.js';
 import { Hotkeys } from './hotkeys.js';
 import { AutoRotate } from './autorotate.js';
+import { Motion } from './motion.js';
+import { parseQuery } from './panospec.js';
 import { CropPadDialog } from './dialogs/cropPad.js';
 import { OpenDialog } from './dialogs/open.js';
 import { HelpDialog } from './dialogs/help.js';
@@ -57,20 +59,25 @@ const canvas = viewer.renderer.domElement;
 const autoRotate = new AutoRotate(viewer);
 
 let cropPad = null;
-const pipeline = new Pipeline(canvasEl => {
+const pipeline = new Pipeline((canvasEl, depthEl) => {
   viewer.setSourceCanvas(canvasEl);
+  viewer.setDepthCanvas(depthEl);
   if (cropPad && cropPad.isOpen()) cropPad.refresh();
 });
 
+const motion = new Motion(viewer);
+
 const input = new InputHandler(pipeline, {
-  onLoad: (bitmap) => {
+  onLoad: (bitmap, depth) => {
     emptyHint.classList.add('hidden');
     const maxSize = viewer.maxTextureSize;
     if (bitmap.width > maxSize || bitmap.height > maxSize) {
       showToast(`Image ${bitmap.width}×${bitmap.height} exceeds GPU max texture size (${maxSize}). May render distorted.`);
     }
+    if (depth) showToast('Depth loaded — WASD / QE to move, [ ] for depth strength.', 5000, 'info');
   },
   onError: msg => showToast(msg),
+  onWarn: msg => showToast(msg),
   dropOverlay,
 });
 
@@ -102,7 +109,8 @@ hotkeys.bind('c', () => {
   if (!pipeline.hasImage()) { showToast('Load an image first.'); return; }
   cropPad.toggle();
 });
-hotkeys.bind('s', async () => {
+// Alt+S, not S: plain S is strafe-back once a depth map is loaded.
+hotkeys.bind('alt+s', async () => {
   if (!pipeline.hasImage()) { showToast('Nothing to save.'); return; }
   const blob = await pipeline.exportPNG();
   if (!blob) { showToast('Export failed.'); return; }
@@ -158,17 +166,17 @@ hotkeys.bind('ctrl+shift+z', () => {
   if (pipeline.redo() && cropPad.isOpen()) cropPad.refresh();
 });
 hotkeys.bind('shift+/', () => helpDlg.toggle());
+hotkeys.bind('[', () => adjustDepth(1 / 0.85));
+hotkeys.bind(']', () => adjustDepth(0.85));
 
-function parseInitialURL() {
-  const search = window.location.search;
-  if (!search || search.length < 2) return null;
-  const rest = search.slice(1);
-  if (/^https?(:|%3a)/i.test(rest)) {
-    try { return decodeURIComponent(rest); } catch { return rest; }
-  }
-  return new URLSearchParams(search).get('url');
+// The knob is the nearest surface's radius, so a *smaller* ratio means a closer
+// near plane and more parallax. Stepped multiplicatively — it's a reciprocal.
+function adjustDepth(factor) {
+  if (!viewer.hasDepth()) { showToast('No depth map loaded.', 900, 'info'); return; }
+  const r = viewer.setNearRatio(viewer.getNearRatio() * factor);
+  showToast(`Depth strength ${(1 / r).toFixed(1)}×`, 900, 'info');
 }
 
-const initialURL = parseInitialURL();
-if (initialURL) input.loadURL(initialURL);
+const initial = parseQuery(window.location.search);
+if (initial) input.loadURL(initial.url, initial.depth);
 

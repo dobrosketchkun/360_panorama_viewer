@@ -11,6 +11,8 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 - Equirectangular input (2:1). Any size — large images may strain the browser.
 - Load by drag-and-drop, clipboard paste, file picker, or URL. Drop and paste work anywhere on the page, anytime, even mid-fullscreen.
 - Direct-link parameter: `…/?<image-url>` (or `…/?url=<encoded>`) auto-loads that image on page open. Subject to the host serving CORS headers.
+- Optional depth map, appended as `&d=<depth-url>`: `…/?<image-url>&d=<depth-url>`. The same notation works in the URL field of the open dialog. The split only happens when the value after `&d=` is itself an `http(s)` URL, so panorama URLs carrying their own query string keep working. If the depth map fails to fetch, the panorama still loads and a warning is shown.
+- Depth map enables a small 6DoF-lite parallax: the sphere is displaced by the map and `WASD`/`QE` lean the eye around the centre, springing back on release.
 - Mouse / arrow / wheel controls. Touch supported (one-finger drag, two-finger pinch). No gyro.
 - Auto-rotate mode with keyboard speed and direction controls.
 - Fullscreen with auto-hiding chrome (compass + help badge + exit button).
@@ -28,7 +30,10 @@ Try here - https://dobrosketchkun.github.io/360_panorama_viewer/
 | One-finger touch drag | Look around |
 | `O` | Open dialog (URL or file picker) |
 | `C` | Crop / Pad dialog |
-| `S` | Save current image as PNG |
+| `Alt+S` | Save current image as PNG |
+| `WASD` / `QE` | Lean the eye around the centre (depth map only) |
+| `Shift` | Hold while leaning for fine control |
+| `[` / `]` | Weaker / stronger depth (depth map only) |
 | `F` | Toggle fullscreen |
 | `R` | Toggle auto-rotate |
 | `+` / `-` | Increase / decrease auto-rotate speed by 1 deg/s |
@@ -54,6 +59,7 @@ Drop, paste, or pick to load an image at any moment — no dialog required.
     index.html
     src/
       main.js, viewer.js, controls.js, pipeline.js, input.js,
+      motion.js, depthprep.js, panospec.js,
       dialog.js, compass.js, fullscreen.js, hotkeys.js, style.css
       dialogs/
         cropPad.js, open.js, help.js
